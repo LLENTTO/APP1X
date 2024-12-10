@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use the Dockerfile in the root for frontend
+    ports:
+      - "3000:3000"  # Expose frontend on port 3000
+    depends_on:
+      - backend      # Make sure backend starts before frontend
+    environment:
+      NEXT_PUBLIC_API_URL: "http://backend:3001"  # Use backend service name for API
+
+  backend:
+    build:
+      context: .  # The context should be the root of your project
+      dockerfile: Dockerfile  # This references the Dockerfile in the root
+    volumes:
+      - ./Data/todos.json:/app/Data/todos.json  # Mount todos.json from the host to container
+    ports:
+      - "3001:3001"  # Expose backend on port 3001
+    command: ["node", "backend/server.ts"]  # Run the server.js to start JSON Server
